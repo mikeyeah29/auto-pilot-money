@@ -11,6 +11,24 @@ class Budget extends Model {
 		return remaining;
 	}
 
+	spentFromBudgets() {
+		var budgets = this.findAll();
+		var spent = 0;
+		for(var i=0;i<budgets.length;i++) {
+			spent += Number(budgets[i].spent);
+		}
+		return spent;
+	}
+
+	totalAllowance() {
+		var budgets = this.findAll();
+		var budgeted = 0;
+		for(var i=0;i<budgets.length;i++) {
+			budgeted += Number(budgets[i].allowance);
+		}
+		return budgeted;
+	}
+
 	constructor() {
 		super('budget', {
 			name: '',

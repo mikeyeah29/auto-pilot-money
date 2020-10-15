@@ -17,9 +17,14 @@
 			<p>Bills paid: £{{ billsPaid }}</p>
 		</div>
 
+		<!-- spent from budgets -->
+		<div class="panel mb-2">
+			<p>Spent from Budgets: £{{ spentFromBudgets }}</p>
+		</div>
+
 		<!-- remaining from budgets -->
 		<div class="panel mb-2">
-			<p>Remaining from Budgets: £{{ remainingFromBudgets }}</p>
+			<p>Unspent from Budgets: £{{ remainingFromBudgets }}</p>
 		</div>
 
 		<!-- Bank accounts should equal: £ (totalIn - totalOutPastTodaysDate) - totalBugetSpent } -->
@@ -57,8 +62,11 @@
 			extra() {
 				return this.totalIn - this.totalOut;
 			},
+			spentFromBudgets() {
+				return Budget.spentFromBudgets();
+			},	
 			moneyInBank() {
-				return (this.totalIn - this.billsPaid) - this.remainingFromBudgets;
+				return (this.totalIn - this.billsPaid) - this.spentFromBudgets;
 			}
 		}
 	}

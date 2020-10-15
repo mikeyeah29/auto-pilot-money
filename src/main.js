@@ -87,6 +87,9 @@ if('serviceWorker' in navigator) {
 	navigator.serviceWorker.register('/sw.js').then((result) => {
 		console.log('Service worker registered');
 		console.log('Scope: ' + result.scope);
+	}, function(error) {
+		console.log('Service worker registation failed');
+		console.log(error);
 	});
 }else{
 	console.log('Service workers not supported');

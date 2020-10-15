@@ -8,7 +8,8 @@
 		</div>
 
 		<div class="panel">
-			<span>Remaining for Budgeting: £{{ totalRemaining }}</span>
+			<span>Remaining money: £{{ remainingForBudgeting }}</span>
+			<span class="d-block">( this is any money thats left after all outs including bills and budgets )</span>
 		</div>
 
 		<FormModal :is_open="infoModalOpen" @close="infoModalOpen = false">
@@ -62,6 +63,8 @@
 
 <script>
 
+	import In from '../../models/In.js';
+	import Out from '../../models/Out.js';
 	import Budget from '../../models/Budget.js';
 
 	import FormModal from '../../components/FormModal.vue';
@@ -73,11 +76,6 @@
 			FormModal,
 			BudgetItem
 		},
-		computed: {
-			remainingForBudgeting() {
-				return Budget.getTotalRemaing();
-			}
-		},
 		data() {
 			return {
 				addBudgetModalOpen: false,
@@ -88,13 +86,17 @@
 				},
 				infoModalOpen: false,
 				budgets: [],
-				totalRemaining: 0
+				totalRemaining: 0,
+				totalIn: In.total(),
+				totalOut: Out.total(),
+				remainingForBudgeting: 0
 			}
 		},
 		methods: {
 			refresh() {
 				this.budgets = Budget.findAll(); // this.$db.Budget.findAll();
 				this.totalRemaining = Budget.getTotalRemaing();
+				this.remainingForBudgeting = (this.totalIn - this.totalOut) - Budget.totalAllowance();
 			},
 			addBudgetItem() {
 				Budget.save(this.addBudgetItemForm);

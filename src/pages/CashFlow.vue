@@ -101,6 +101,11 @@
 				this.outs = this.$db['Out'].findAll();
 				this.lineItems = this.outs;
 			},
+			resetForm() {
+				this.addLineItemForm.name = '';
+				this.addLineItemForm.date = '';
+				this.addLineItemForm.amount = '';
+			},
 			addLineItem() {
 				this.$db[this.currentTable].save({
 					name: this.addLineItemForm.name,
@@ -109,6 +114,7 @@
 				});
 				this.refresh();
 				this.addModalIsOpen = false;
+				this.resetForm();
 			},
 			removeLineItem(id, table) {
 				this.$db[table].remove(id);
