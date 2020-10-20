@@ -1,15 +1,19 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from './App.vue'
+import store from './store.js'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { 
+	faTachometerAlt,
 	faEdit, 
 	faTrashAlt, 
 	faReceipt,
 	faInfoCircle,
 	faRedoAlt,
-	faMoneyBillWave
+	faMoneyBillWave,
+	faSignOutAlt,
+	faCreditCard
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -20,13 +24,17 @@ import Dashboard from './pages/Dashboard'
 import CashFlow from './pages/CashFlow'
 import Budgets from './pages/Budgets/Budgets'
 import Debts from './pages/Debts'
+import Login from './pages/Login'
 
+library.add(faTachometerAlt);
 library.add(faEdit);
 library.add(faTrashAlt);
 library.add(faReceipt);
 library.add(faInfoCircle);
 library.add(faRedoAlt);
 library.add(faMoneyBillWave);
+library.add(faSignOutAlt);
+library.add(faCreditCard);
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 
@@ -60,24 +68,65 @@ const router = new VueRouter({
 	routes: [
 		{
 			path: '/',
-			component: Dashboard
+			component: Dashboard,
+			meta: {
+				allowAnonymous: false
+			}
 		},
 		{
 			path: '/cashflow',
-			component: CashFlow
+			component: CashFlow,
+			meta: {
+				allowAnonymous: false
+			}
 		},
 		{
 			path: '/budgets',
-			component: Budgets
+			component: Budgets,
+			meta: {
+				allowAnonymous: false
+			}
 		},
 		{
 			path: '/debts',
-			component: Debts
+			component: Debts,
+			meta: {
+				allowAnonymous: false
+			}
+		},
+		{
+			path: '/login',
+			component: Login,
+			meta: {
+				allowAnonymous: true,
+				loggedOut: true
+			}
 		}
 	]
 });
 
+router.beforeEach((to, from, next) => {
+
+	if(to.meta.loggedOut && store.getters.isLoggedIn) {
+		next({
+			path: '/',
+			query: { redirect: to.fullPath }
+		});
+	}
+	// not allowed for anyone && user isnt logged in
+	if (!to.meta.allowAnonymous && !store.getters.isLoggedIn) {
+		next({
+			path: '/login',
+			query: { redirect: to.fullPath }
+		});
+	}
+	else {
+		next();
+	}  
+});
+
 new Vue({
+  store,
   render: h => h(App),
   router
 }).$mount('#app')

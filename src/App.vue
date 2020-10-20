@@ -5,22 +5,27 @@
 
     <router-view></router-view>
 
+    <ErrorBox :errors="$store.state.errors" />
+
   </div>
 </template>
 
 <script>
 
 import FixedNav from './components/FixedNav.vue';
+import ErrorBox from './components/ErrorBox.vue';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default {
   name: 'App',
   components: {
-    FixedNav
+    FixedNav,
+    ErrorBox
   },
   data() {
     return {
+      // isAuthenticated: !!localStorage.getItem('token')
       db_table: 'In', // In or Out
       currentTable: 'In'
     }
@@ -143,5 +148,21 @@ input {
 .panel p {
   margin: 0px;
 }
+
+.loading {
+  position: relative;
+}
+
+.loading:before {
+  content: 'loading...';
+  display: block;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  background: #2c92ff;
+  height: 100%;
+}
+
 
 </style>

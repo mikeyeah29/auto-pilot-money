@@ -1,12 +1,30 @@
 <template>
 	
 	<div>
-		<div class="nav d-flex justify-content-between">
-			<router-link class="nav-item no_border" to="/">Dash</router-link>
-			<router-link class="nav-item no_border" to="/cashflow">Flow</router-link>
-			<router-link class="nav-item" to="/budgets">Budgets</router-link>
-			<router-link class="nav-item" to="/debts">Debts</router-link>
+		<div class="nav d-flex justify-content-between" v-if="$store.state.token">
+			<router-link class="nav-item no_border" to="/">
+				<font-awesome-icon icon="tachometer-alt" />
+			</router-link>
+			<router-link class="nav-item no_border" to="/cashflow">
+				<font-awesome-icon icon="money-bill-wave" />
+			</router-link>
+			<router-link class="nav-item" to="/budgets">
+				<font-awesome-icon icon="receipt" />
+			</router-link>
+			<router-link class="nav-item" to="/debts">
+				<font-awesome-icon icon="credit-card" />
+			</router-link>
+			<div class="nav-item" @click="logout">
+				<font-awesome-icon icon="sign-out-alt" />
+			</div>
 		</div>
+
+		<!-- <div class="nav d-flex justify-content-between" v-else>
+			<router-link class="nav-item" to="/login">
+				<font-awesome-icon icon="tachometer-alt" />
+			</router-link>
+		</div> -->
+
 	</div>
 
 </template>
@@ -14,7 +32,13 @@
 <script>
 	
 	export default {
-		name: 'FixedNav'
+		name: 'FixedNav',
+		methods: {
+			logout() {
+				this.$store.commit('logout');
+				this.$router.push('/login');
+			}
+		}
 	}
 
 </script>
@@ -41,7 +65,7 @@
 
 	.router-link-exact-active {
 		background: #003267;
-		color: #fff;
+		color: #fff !important;
 	}
 
 </style>

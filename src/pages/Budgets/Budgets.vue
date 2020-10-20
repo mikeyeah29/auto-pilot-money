@@ -94,7 +94,7 @@
 		},
 		methods: {
 			refresh() {
-				this.budgets = Budget.findAll(); // this.$db.Budget.findAll();
+				this.budgets = this.$store.state.budgets; // Budget.findAll(); // this.$db.Budget.findAll();
 				this.totalRemaining = Budget.getTotalRemaing();
 				this.remainingForBudgeting = (this.totalIn - this.totalOut) - Budget.totalAllowance();
 			},
