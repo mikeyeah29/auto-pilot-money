@@ -1,6 +1,6 @@
 <template>
 	
-	<div class="container">
+	<div class="container" :class="{ loading: $store.state.loading }">
 		
 		<div class="d-flex justify-content-between h1_box">
 			<h1>Budgets (monthly)</h1>
@@ -38,18 +38,13 @@
 			<div class="form-group">
 				<label>Allowance</label>
 				<input type="number" v-model="addBudgetItemForm.allowance" />
-			</div>
-
-			<div class="form-group">
-				<label>Spent</label>
-				<input type="number" v-model="addBudgetItemForm.spent" />
-			</div>			
+			</div>		
 
 			<button class="button" @click="addBudgetItem()">Add Budget Item</button>
 
 		</FormModal>
 
-		<BudgetItem v-for="budget in budgets" 
+		<BudgetItem v-for="budget in this.$store.state.budgets.budgets" 
 					:budget="budget" 
 					:key="budget.id"
 					@updated="refresh()" />
@@ -65,7 +60,6 @@
 
 	import In from '../../models/In.js';
 	import Out from '../../models/Out.js';
-	import Budget from '../../models/Budget.js';
 
 	import FormModal from '../../components/FormModal.vue';
 	import BudgetItem from './BudgetItem.vue';
@@ -81,31 +75,29 @@
 				addBudgetModalOpen: false,
 				addBudgetItemForm: {
 					name: '',
-					allowance: 0,
-					spent: 0
+					allowance: ''
 				},
 				infoModalOpen: false,
 				budgets: [],
 				totalRemaining: 0,
 				totalIn: In.total(),
-				totalOut: Out.total(),
-				remainingForBudgeting: 0
+				totalOut: Out.total()
+			}
+		},
+		computed: {
+			remainingForBudgeting() {
+				return this.$store.getters.extra - this.$store.getters.budgeted;
 			}
 		},
 		methods: {
-			refresh() {
-				this.budgets = this.$store.state.budgets; // Budget.findAll(); // this.$db.Budget.findAll();
-				this.totalRemaining = Budget.getTotalRemaing();
-				this.remainingForBudgeting = (this.totalIn - this.totalOut) - Budget.totalAllowance();
-			},
 			addBudgetItem() {
-				Budget.save(this.addBudgetItemForm);
-				this.refresh();
+				var budget = this.addBudgetItemForm;
+				this.$store.dispatch('addBudgetItem', budget);
 				this.addBudgetModalOpen = false;
 			}
 		},
-		mounted() {
-			this.refresh();
+		created() {
+			this.$store.dispatch('getBudgets');
 		}
 	}
 

@@ -1,9 +1,6 @@
 <template>
 
 	<div class="error-box" v-if="errors.length > 0">
-
-		{{ errors }}
-
 		<p v-for="(e, i) in errors" :key="i">{{ e }}</p>
 	</div>
 

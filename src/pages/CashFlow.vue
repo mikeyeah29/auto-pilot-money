@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div class="container">
+		<div class="container" :class="{ loading: $store.state.loading }">
 
 			<div class="d-flex justify-content-between h1_box">
 				<h1>Cash Flow</h1>
@@ -14,15 +14,15 @@
 				<div class="tabs__rule"></div>
 			</div>
 
-			<Totals :ins="totalIn" :outs="totalOut" :extra="extra" />
+			<Totals />
 
-			<BudgetTable :lineItems="ins"
+			<BudgetTable :lineItems="this.$store.state.transactions.ins"
 					table="In"
 					v-show="currentTable === 'In' ? true : false"
 					@removeItem="removeLineItem($event, 'In')"
 					@updateItem="updateLineItem($event)" />
 
-			<BudgetTable :lineItems="outs"
+			<BudgetTable :lineItems="this.$store.state.transactions.outs"
 					table="Out"
 					v-show="currentTable === 'Out' ? true : false"
 					@removeItem="removeLineItem($event, 'Out')"
@@ -96,32 +96,23 @@
 				}
 				return false;
 			},
-			refresh() {
-				this.ins = this.$db['In'].findAll();
-				this.outs = this.$db['Out'].findAll();
-				this.lineItems = this.outs;
-			},
 			resetForm() {
 				this.addLineItemForm.name = '';
 				this.addLineItemForm.date = '';
 				this.addLineItemForm.amount = '';
 			},
 			addLineItem() {
-				this.$db[this.currentTable].save({
+				this.$store.dispatch('addTransaction', {
+					direction: this.currentTable.toLowerCase(),
 					name: this.addLineItemForm.name,
-					dayOfMonth: this.addLineItemForm.date,
+					date: this.addLineItemForm.date,
 					amount: this.addLineItemForm.amount
 				});
-				this.refresh();
 				this.addModalIsOpen = false;
 				this.resetForm();
 			},
 			removeLineItem(id, table) {
 				this.$db[table].remove(id);
-				this.refresh();
-			},
-			updateLineItem(e) {
-				this.$db[this.currentTable].update(e.id, e.data);
 				this.refresh();
 			},
 			changeTable(table) {
@@ -147,9 +138,9 @@
 				return this.totalIn - this.totalOut;
 			}
 		},
-		mounted() {
-			this.refresh();
-			console.log( this.outs );
+		created() {
+			this.$store.dispatch('getIns');
+			this.$store.dispatch('getOuts');
 		}
 	}
 

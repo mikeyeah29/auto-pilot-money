@@ -1,36 +1,36 @@
 <template>
-	<div class="container">
+	<div class="container" :class="{ loading: $store.state.loading }">
 
 		<div class="d-flex justify-content-between h1_box">
 			<h1>Monthly Balance</h1>
 		</div>
 
 		<!-- totals -->
-		<Totals :ins="totalIn" :outs="totalOut" :extra="extra" />
+		<Totals />
 
 		<div class="d-flex mt-3 justify-content-between h1_box">
 			<h1>Running Expenses</h1>
 		</div>
 
 		<!-- bills paid (should have been paid anyway) -->
-		<div class="panel mt-2 mb-2">
+		<!-- <div class="panel mt-2 mb-2">
 			<p>Bills paid: £{{ billsPaid }}</p>
-		</div>
+		</div> -->
 
 		<!-- spent from budgets -->
-		<div class="panel mb-2">
+		<!-- <div class="panel mb-2">
 			<p>Spent from Budgets: £{{ spentFromBudgets }}</p>
-		</div>
+		</div> -->
 
 		<!-- remaining from budgets -->
-		<div class="panel mb-2">
+		<!-- <div class="panel mb-2">
 			<p>Unspent from Budgets: £{{ remainingFromBudgets }}</p>
-		</div>
+		</div> -->
 
 		<!-- Bank accounts should equal: £ (totalIn - totalOutPastTodaysDate) - totalBugetSpent } -->
-		<div class="panel mb-2">
+		<!-- <div class="panel mb-2">
 			<p>Bank accounts should have: £{{ moneyInBank }}</p>
-		</div>
+		</div> -->
 
 	</div>
 </template>
@@ -68,6 +68,13 @@
 			moneyInBank() {
 				return (this.totalIn - this.billsPaid) - this.spentFromBudgets;
 			}
+		},
+		mounted() {
+			this.$store.commit('setError', []);
+		},
+		created() {
+			this.$store.dispatch('getIns');
+			this.$store.dispatch('getOuts');
 		}
 	}
 

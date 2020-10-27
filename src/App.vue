@@ -7,6 +7,8 @@
 
     <ErrorBox :errors="$store.state.errors" />
 
+    <div class="success" v-if="success">{{ success }}</div>
+
   </div>
 </template>
 
@@ -28,6 +30,11 @@ export default {
       // isAuthenticated: !!localStorage.getItem('token')
       db_table: 'In', // In or Out
       currentTable: 'In'
+    }
+  },
+  computed: {
+    success() {
+      return this.$store.state.success;
     }
   }
 }
@@ -106,6 +113,7 @@ input {
   line-height: 1.35em;
   font-size: 38px;
   color: white;
+  z-index: 5;
 }
 
 .button {
@@ -162,7 +170,20 @@ input {
   width: 100%;
   background: #2c92ff;
   height: 100%;
+  z-index: 3;
+  text-align: center;
+  color: #fff;
 }
 
+.success {
+  position: fixed;
+  background: #4aff7b;
+  width: 100%;
+  text-align: center;
+  bottom: 0px;
+  padding: 16px 0px;
+  color: aliceblue;
+  color: #077725;
+}
 
 </style>

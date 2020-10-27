@@ -19,7 +19,7 @@
 
 				<tr v-for="item in lineItems" :key="item.id">
 					<td><div class="truncate">{{ item.name }}</div></td>
-					<td>{{ item.dayOfMonth }}</td>
+					<td>{{ item.date }}</td>
 					<td>£{{ item.amount }}</td>
 					<td class="text-right">
 						<span class="ml-2 icon_btn">
@@ -99,28 +99,31 @@
 				this.ays_open = true;
 			},
 			removeLineItem() {
-				this.$emit('removeItem', this.targeted_item_id);
+				this.$store.dispatch('removeTransaction', {
+					id: this.targeted_item_id,
+					direction: this.table.toLowerCase()
+				});
 				this.ays_open = false;
 			},
 			openEditItemModal(id) {
 				this.targeted_item_id = id;
-				this.targeted_item = this.$db[this.table].find(id);
+				var t = this.$store.getters.findTransaction(id, this.table);
 				this.edit_item_form = {
-					name: this.targeted_item.name,
-					dayOfMonth: this.targeted_item.dayOfMonth,
-					amount: this.targeted_item.amount
+					name: t.name,
+					dayOfMonth: t.date,
+					amount: t.amount
 				};
 				this.edit_item_open = true;		
 			},
 			updateLineItem() {
-				this.$emit('updateItem', {
+				var data = {
 					id: this.targeted_item_id,
-					data: {
-						name: this.edit_item_form.name,
-						dayOfMonth: this.edit_item_form.dayOfMonth,
-						amount: this.edit_item_form.amount
-					}
-				});
+					direction: this.table.toLowerCase(),
+					name: this.edit_item_form.name,
+					date: this.edit_item_form.dayOfMonth,
+					amount: this.edit_item_form.amount
+				}
+				this.$store.dispatch('updateTransaction', data);
 				this.edit_item_open = false;
 			}
 		}

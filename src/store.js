@@ -3,20 +3,21 @@ import Vuex from 'vuex';
 
 import axios from 'axios';
 
+import transactions from './modules/transactions';
+import budgets from './modules/budgets';
+import debts from './modules/debts';
+
 Vue.use(Vuex);
 
-var baseUrl = 'http://autopilot.rwdstaging.co.uk';
+var baseUrl = 'https://autopilot.rwdstaging.co.uk';
 
 export default new Vuex.Store({
 	state: {
 		errors: [],
+		success: '',
 		loading: false,
 		token: localStorage.getItem('token') || '',
-		startDay: 25,
-		ins: [],
-		outs: [],
-		budgets: [],
-		debts: []
+		startDay: 25
 	},
 	mutations: {
 		auth(state, token) {
@@ -26,30 +27,52 @@ export default new Vuex.Store({
 			localStorage.clear('token');
 			state.token = '';
 		},
-		setBudgets(state, budgets) {
-			state.budgets = budgets;
-		},
 		setLoading(state, loading) {
 			state.loading = loading;
 		},
+		setSuccess(state, message) {
+			state.success = message;
+		},
 		setError(state, eData) {
 
-			var errs = [];
-
-			if(eData.errors) {
-				for (const [key, value] of Object.entries(eData.errors)) {
-					console.log(key);
-					errs.push(value[0]);
-				}
+			if(!eData || eData.length < 1) {
+				state.errors = [];
+				return;
 			}
 
-			if(errs.length > 0) {
-				state.errors = errs;				
-			}else{
+			if(Array.isArray(eData)) {
+				state.errors = eData;
+				return;
+			}
+
+			if(typeof eData === 'string') {
+				state.errors = [ eData ];
+			}
+
+			if(typeof eData === 'object') {
+				if(eData.response) {
+					if(eData.response.data) {
+						if(eData.response.data.errors) {
+							var errs = [];
+							for (const [key, value] of Object.entries(eData.response.data.errors)) {
+								console.log(key);
+								errs.push(value[0]);
+							}
+							state.errors = errs;
+							return;
+						}
+						state.errors = [eData.response.data.message];
+						return;
+					}
+					state.errors = [eData.status + ': ' + eData.statusText];
+				}
 				if(eData.message) {
 					state.errors = [eData.message];
+					return;
 				}
 			}
+
+			state.errors = [eData];
 
 		}
 	},
@@ -65,15 +88,14 @@ export default new Vuex.Store({
 					.then((res) => {
 						var token = res.data.access_token;
 						localStorage.setItem('token', token);
-						axios.defaults.headers.common['Authorization'] = token;
+						axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
 						commit('auth', token);
 						commit('setLoading', false);
 						resolve();
 					})
 					.catch((e) => {
-						console.log(e);
-						var eData = e.response.data;
-						commit('setError', eData);
+						console.log('e.response ', e.response);
+						commit('setError', e);
 						commit('setLoading', false);
 					});
 
@@ -85,9 +107,11 @@ export default new Vuex.Store({
 		isLoggedIn(state) {
 			return !!state.token;
 		}
-		// isAuthenticated() {
-		// 	return !!localStorage.getItem('token');
-		// }
+	},
+	modules: {
+		transactions,
+		budgets,
+		debts
 	}
 });
 

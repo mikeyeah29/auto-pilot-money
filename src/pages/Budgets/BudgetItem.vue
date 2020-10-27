@@ -85,7 +85,7 @@
 
 <script>
 
-	import Budget from '../../models/Budget.js';
+	// import Budget from '../../models/Budget.js';
 
 	import ConfirmModal from '../../components/ConfirmModal';
 	import FormModal from '../../components/FormModal';
@@ -115,35 +115,40 @@
 		},
 		methods: {
 			removeBudgetItem() {
-				Budget.remove(this.budget.id);
-				this.$emit('updated');
+				this.$store.dispatch('removeBudgetItem', this.budget.id);
 				this.ays_open = false;
 			},
 			updateBudgetItem() {
-				Budget.update(this.budget.id, {
+				var budget = {
+					id: this.budget.id,
 					name: this.edit_form.name,
 					allowance: this.edit_form.allowance,
 					spent: this.edit_form.spent
-				});
-				this.$emit('updated');
+				};
+				this.$store.dispatch('updateBudgetItem', budget);
 				this.edit_open = false;
 			},
 			resetBudgetItem() {
-				Budget.update(this.budget.id, {
-					name: this.budget.name,
-					allowance: this.budget.allowance,
-					spent: 0
-				});
-				this.$emit('updated');
+				this.$store.dispatch('resetBudgetItem', this.budget.id);
 				this.reset_open = false;
 			},
 			spend() {
-				Budget.update(this.budget.id, {
-					name: this.budget.name,
-					allowance: this.budget.allowance,
-					spent: Number(this.budget.spent) + Number(this.spend_form.amount) 
-				});
-				this.$emit('updated');
+
+				var budget = {
+					id: this.budget.id,
+					spent: this.spend_form.amount
+				};
+
+				console.log(budget);
+
+				this.$store.dispatch('spendBudgetItem', budget);
+
+				// Budget.update(this.budget.id, {
+				// 	name: this.budget.name,
+				// 	allowance: this.budget.allowance,
+				// 	spent: Number(this.budget.spent) + Number(this.spend_form.amount) 
+				// });
+				// this.$emit('updated');
 				this.spend_open = false;
 			}
 		},

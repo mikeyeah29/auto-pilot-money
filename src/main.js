@@ -107,6 +107,9 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
 
+	store.commit('setError', null);
+	store.commit('setSuccess', '');
+
 	if(to.meta.loggedOut && store.getters.isLoggedIn) {
 		next({
 			path: '/',
